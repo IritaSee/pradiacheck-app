@@ -1,3 +1,16 @@
 <HelloWorld>:
+    orientation: 'vertical'
+    Camera:
+        id: camera
+        resolution: (640, 480)
+        play: True
+    Button:
+        text: 'Capture and Analyze'
+        size_hint_y: None
+        height: '48dp'
+        on_press: root.capture_and_analyze()
     Label:
-        text: 'Hello World'
+        id: result_label
+        text: 'Result:'
+        size_hint_y: None
+        height: '48dp'
