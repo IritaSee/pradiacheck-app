@@ -1,5 +1,16 @@
 <MainScreen>:
 
+    # Properti yang dibutuhkan untuk fungsi Python (asumsi)
+    preview_image: ''
+    is_loading: False
+    show_error: False
+    error_message: ""
+    has_result: False
+    prediction_text: "Normal"
+    confidence_text: "99.8%"
+    prognosis_color: 0.1, 0.5, 0.1, 1 # Hijau untuk Normal
+    prognosis_bg_color: 0.8, 1, 0.8, 1 # Latar belakang hijau muda
+
     # KANVAS UTAMA: Tetap menggunakan seluruh layar untuk warna background
     canvas.before:
         Color:
@@ -20,7 +31,7 @@
             padding: dp(10)
             canvas.before:
                 Color:
-                    rgba: 0.8, 0.84, 0.89, 1
+                    rgba: 0.8, 0.84, 0.89, 1 # Abu-abu Kebiruan
                 Rectangle:
                     pos: self.pos
                     size: self.size
@@ -51,9 +62,7 @@
         # =========================================================
         RelativeLayout:
             size_hint_y: None
-            # Tinggi dihitung berdasarkan lebar parent (screen width)
             height: (self.width) * 0.6
-            # HAPUS PROPERTI PADDING DARI SINI
             
             # Canvas Background Jumbotron
             canvas.before:
@@ -70,6 +79,7 @@
                 keep_ratio: False
                 size_hint: 1, 1
                 pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+                opacity: 0.69
 
             # Lapisan gelap dan teks di atas gambar
             BoxLayout:
@@ -79,7 +89,7 @@
 
                 canvas.before:
                     Color:
-                        rgba: 0, 0, 0, 0.4 # Lapisan gelap
+                        rgba: 0, 0, 0, 0.4 # --- LAPISAN GELAP DIKEMBALIKAN ---
                     Rectangle:
                         pos: self.parent.pos
                         size: self.parent.size
@@ -91,22 +101,40 @@
                     Label:
                         text: "Welcome to"
                         font_size: dp(18)
-                        color: 1, 1, 1, 1
+                        # --- WARNA TEKS KEMBALI PUTIH ---
+                        color: 1, 1, 1, 1 
                         bold: True
                         halign: 'center'
                         valign: 'middle'
                         size_hint_y: None
                         height: dp(30)
-
-                    Label:
-                        text: "Pradiacheck.AI"
-                        font_size: dp(40)
-                        color: 1, 1, 1, 1
-                        bold: True
-                        halign: 'center'
-                        valign: 'middle'
+                        
+                    # Teks Utama (Pradiacheck.AI)
+                    RelativeLayout:
                         size_hint_y: 1
-        
+                        
+                        # --- SHADOW LABEL DIKEMBALIKAN UNTUK TEKS UTAMA ---
+                        Label:
+                            text: "Pradiacheck.AI"
+                            font_size: dp(40)
+                            color: 0, 0, 0, 0.5 # Warna bayangan (hitam dengan opasitas)
+                            bold: True
+                            halign: 'center'
+                            valign: 'middle'
+                            pos: self.parent.pos[0] + dp(2), self.parent.pos[1] - dp(2)
+                            pos_hint: {'center_x': 0.5, 'center_y': 0.5} 
+
+                        # Teks Asli (Di atas bayangan)
+                        Label:
+                            text: "Pradiacheck.AI"
+                            font_size: dp(40)
+                            # --- WARNA TEKS KEMBALI PUTIH ---
+                            color: 1, 1, 1, 1 
+                            bold: True
+                            halign: 'center'
+                            valign: 'middle'
+                            pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+
         # Spacer untuk memisahkan Jumbotron dan Konten
         Widget:
             size_hint_y: None
@@ -115,11 +143,9 @@
         # 3. KONTEN UTAMA DENGAN PADDING KANAN & KIRI SAJA (Dibungkus ScrollView)
         AnchorLayout:
             size_hint: 1, 1
-            # Padding untuk KONTEN BOX: [Kiri, Bawah, Kanan, Atas]
-            # Atas: 0 (sudah ada spacer di atasnya)
             padding: dp(20), 0, dp(20), 0
 
-            # WRAPPER KONTEN: Memastikan konten mengisi ruang yang sudah diberi padding
+            # WRAPPER KONTEN
             BoxLayout:
                 id: container_wrapper
                 orientation: 'vertical'
@@ -129,7 +155,6 @@
                 ScrollView:
                     id: scroll_view
                     do_scroll_x: False
-                    # Padding bottom untuk jarak dari bawah layar jika konten pendek
                     padding: 0, dp(20), 0, 0
 
                     # KONTEN PEMBUNGKUS SCROLLVIEW
@@ -137,7 +162,7 @@
                         orientation: 'vertical'
                         size_hint_y: None
                         height: self.minimum_height
-                        spacing: dp(20) # Spacing antar Tutorial Container dan Results Container
+                        spacing: dp(20) 
                         
                         # Container (Tutorial, Upload, Results)
                         BoxLayout:
@@ -148,7 +173,7 @@
                             spacing: dp(20)
                             canvas.before:
                                 Color:
-                                    rgba: 0.8, 0.84, 0.89, 0.95
+                                    rgba: 0.8, 0.84, 0.89, 0.95 # Abu-abu Kebiruan Transparan
                                 RoundedRectangle:
                                     pos: self.pos
                                     size: self.size
