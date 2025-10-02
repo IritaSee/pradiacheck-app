@@ -1,6 +1,6 @@
 from kivy.app import App
 from kivy.uix.screenmanager import Screen
-from kivy.properties import StringProperty, BooleanProperty, ListProperty, NumericProperty 
+from kivy.properties import StringProperty, BooleanProperty, ListProperty, NumericProperty
 from kivy.clock import Clock
 from kivy.animation import Animation
 from plyer import filechooser
@@ -8,9 +8,26 @@ from ultralytics import YOLO
 from PIL import Image
 import pillow_heif
 from kivy.core.window import Window
+from kivy.uix.behaviors import ButtonBehavior
+from kivy.uix.image import Image
+from kivy.uix.boxlayout import BoxLayout
+import os # Tambahkan import os untuk menghapus file
 
 # Daftarkan HEIF agar bisa dibaca PIL
 pillow_heif.register_heif_opener()
+
+class ImageUploader(BoxLayout):
+    # Properti yang akan menyimpan path gambar
+    preview_image = StringProperty('')
+
+    def select_image(self):
+        # Logika untuk membuka dialog pemilihan file
+        # Misalnya, menggunakan plyer.filechooser atau FileChooserIconView
+
+        # Setelah pengguna memilih gambar:
+        # file_path = "path/ke/gambar/yang/dipilih.jpg"
+        # self.preview_image = file_path # Ini akan memicu pembaruan di KivyLang
+        pass
 
 class MainScreen(Screen):
     """Main screen dengan upload dan hasil deteksi"""
@@ -24,8 +41,8 @@ class MainScreen(Screen):
     error_message = StringProperty("")
     prognosis_color = ListProperty([0.12, 0.62, 0.33, 1])
     prognosis_bg_color = ListProperty([0.12, 0.62, 0.33, 0.1])
-    
-    # [PERUBAHAN DISINI] Properti untuk font size dinamis
+
+    # Properti untuk font size dinamis
     font_size_jumbo = NumericProperty(0)
     font_size_large = NumericProperty(0)
     font_size_medium = NumericProperty(0)
@@ -34,19 +51,18 @@ class MainScreen(Screen):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        # [PERUBAHAN DISINI] Bind fungsi on_window_size ke event on_resize dari Window
+        # Bind fungsi on_window_size ke event on_resize dari Window
         Window.bind(on_resize=self.on_window_size)
         # Panggil sekali di awal untuk set ukuran font awal
         self.on_window_size(Window, Window.width, Window.height)
         self.model = None
         Clock.schedule_once(self.load_model)
 
-    # [PERUBAHAN DISINI] Fungsi untuk update font saat layar resize
     def on_window_size(self, window, width, height):
         """Dipanggil setiap kali ukuran window berubah."""
         # Base size bisa berdasarkan lebar atau tinggi, lebar biasanya lebih baik
         base_size = width
-        
+
         # Atur ukuran font berdasarkan rasio dari lebar window
         # min() digunakan agar font tidak terlalu besar di layar desktop
         # max() digunakan agar font tidak terlalu kecil di layar mobile
@@ -60,7 +76,7 @@ class MainScreen(Screen):
         """Memuat model AI."""
         try:
             # Ganti dengan path model Anda yang benar
-            self.model = YOLO("best100.pt") 
+            self.model = YOLO("best100.pt")
             print("Model loaded successfully.")
         except Exception as e:
             self.show_error_message(f"Model load failed: {e}")
@@ -76,9 +92,9 @@ class MainScreen(Screen):
         """Menangani file yang dipilih."""
         if not selection:
             return
-        
+
         self.image_path = selection[0]
-        
+
         if self.image_path.lower().endswith('.heic'):
             self.convert_heic()
         else:
@@ -90,10 +106,14 @@ class MainScreen(Screen):
         try:
             heif_file = pillow_heif.read_heif(self.image_path)
             img = Image.frombytes(heif_file.mode, heif_file.size, heif_file.data, "raw").convert("RGB")
-            
-            new_path = self.image_path.rsplit(".", 1)[0] + ".jpg"
+
+            # Simpan file yang dikonversi di direktori sementara
+            temp_dir = App.get_running_app().user_data_dir
+            temp_filename = os.path.basename(self.image_path).rsplit(".", 1)[0] + ".jpg"
+            new_path = os.path.join(temp_dir, temp_filename)
+
             img.save(new_path, "JPEG")
-            
+
             self.image_path = new_path
             self.preview_image = new_path
             self.show_success_feedback()
@@ -121,34 +141,36 @@ class MainScreen(Screen):
         if not self.model:
             self.show_error_message("AI Model is not loaded yet. Please wait.")
             return
-            
+
         self.is_loading = True
         self.has_result = False
         self.show_error = False
-        
+
         Clock.schedule_once(self.run_detection, 0.5)
 
     def run_detection(self, dt):
         """Menjalankan deteksi dan menampilkan hasil."""
+        original_image_path = self.image_path # Simpan path asli untuk dihapus nanti
+        
         try:
-            results = self.model(self.image_path)
-            
+            results = self.model(original_image_path)
+
             if results and results[0].boxes:
                 box = results[0].boxes[0]
                 pred_class_idx = int(box.cls[0])
                 pred_class_name = self.model.names[pred_class_idx]
                 confidence = float(box.conf[0]) * 100
-                
+
                 self.prediction_text = pred_class_name
                 self.confidence_text = f"{confidence:.2f}%"
-                
+
                 if "Normal" in pred_class_name:
                     self.prognosis_color = [0.12, 0.62, 0.33, 1]
                     self.prognosis_bg_color = [0.12, 0.62, 0.33, 0.1]
                 else:
                     self.prognosis_color = [0.78, 0.16, 0.16, 1]
                     self.prognosis_bg_color = [0.78, 0.16, 0.16, 0.1]
-                
+
                 self.has_result = True
                 self.scroll_to_results()
             else:
@@ -156,8 +178,21 @@ class MainScreen(Screen):
 
         except Exception as e:
             self.show_error_message(f"An error occurred during detection: {e}")
+
         finally:
             self.is_loading = False
+            # [MODIFIKASI: HAPUS GAMBAR SETELAH HASIL MUNCUL]
+            self.preview_image = ""
+            self.image_path = ""
+            
+            # Coba hapus file gambar yang diupload/dikonversi
+            if os.path.exists(original_image_path):
+                try:
+                    os.remove(original_image_path)
+                    print(f"Removed temporary file: {original_image_path}")
+                except Exception as e:
+                    print(f"Failed to remove file {original_image_path}: {e}")
+            # ---------------------------------------------------
 
     def scroll_to_results(self):
         """Scroll ke bagian hasil."""
@@ -173,4 +208,5 @@ class HelloWorld(App):
         return MainScreen()
 
 if __name__ == '__main__':
+    Window.size = (430, 932)
     HelloWorld().run()
