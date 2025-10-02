@@ -1,16 +1,400 @@
-<HelloWorld>:
-    orientation: 'vertical'
-    Camera:
-        id: camera
-        resolution: (640, 480)
-        play: True
-    Button:
-        text: 'Capture and Analyze'
-        size_hint_y: None
-        height: '48dp'
-        on_press: root.capture_and_analyze()
-    Label:
-        id: result_label
-        text: 'Result:'
-        size_hint_y: None
-        height: '48dp'
+<MainScreen>:
+    canvas.before:
+        Color:
+            # Warna merah-oranye yang sangat lembut (seperti warna peach/salmon muda)
+            rgba: 0.886, 0.478, 0.415, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+    BoxLayout:
+        orientation: 'vertical'
+        
+        # Header
+        AnchorLayout: # <-- GANTI BoxLayout menjadi AnchorLayout
+            anchor_x: 'center' # Pusatkan konten secara horizontal
+            anchor_y: 'center' # Pusatkan konten secara vertikal
+            size_hint_y: None
+            height: dp(70)
+            padding: dp(10)
+            canvas.before:
+                Color:
+                    rgba: 0.8, 0.84, 0.89, 1
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+            
+            # Grup logo dan teks sekarang menjadi anak langsung dari AnchorLayout
+            BoxLayout:
+                orientation: 'horizontal'
+                size_hint: None, None # Jangan biarkan layout ini mengisi ruang
+                width: self.minimum_width  # Lebar sesuai total konten di dalamnya
+                height: dp(40) # Beri tinggi agar vertikal center bekerja baik
+                spacing: dp(5) # Beri sedikit jarak agar logo dan teks tidak terlalu menempel
+                
+                Image:
+                    source: "logo1.png"
+                    size_hint_x: None
+                    width: dp(40)
+                    allow_stretch: True
+                    keep_ratio: True
+                
+                Label:
+                    text: "Pradiacheck.AI"
+                    font_size: dp(24)
+                    bold: True
+                    color: 0.886, 0.478, 0.415, 1
+                    size_hint_x: None
+                    width: self.texture_size[0]
+                    valign: 'middle'
+        
+        # Main content dengan ScrollView
+        ScrollView:
+            id: scroll_view
+            do_scroll_x: False
+            
+            BoxLayout:
+                orientation: 'vertical'
+                size_hint_y: None
+                height: self.minimum_height
+                padding: dp(15)
+                spacing: dp(20)
+                
+                # Jumbotron (Tidak diubah, sudah oke)
+                BoxLayout:
+                    size_hint_y: None
+                    height: dp(200)
+                    padding: dp(20)
+                    canvas.before:
+                        Color:
+                            rgba: 0.886, 0.478, 0.415, 1
+                        RoundedRectangle:
+                            pos: self.pos
+                            size: self.size
+                            radius: [dp(15)]
+                    
+                    BoxLayout:
+                        orientation: 'vertical'
+                        
+                        Label:
+                            text: "Welcome to"
+                            font_size: dp(16)
+                            color: 0.96, 0.96, 0.96, 1
+                            size_hint_y: None
+                            height: dp(25)
+                        
+                        Label:
+                            text: "Pradiacheck.AI"
+                            font_size: dp(32)
+                            bold: True
+                            color: 1, 1, 1, 1
+                            size_hint_y: None
+                            height: dp(50)
+                
+                # Container (Tidak diubah)
+                BoxLayout:
+                    orientation: 'vertical'
+                    size_hint_y: None
+                    height: self.minimum_height
+                    padding: dp(15)
+                    spacing: dp(20)
+                    canvas.before:
+                        Color:
+                            rgba: 0.8, 0.84, 0.89, 0.95
+                        RoundedRectangle:
+                            pos: self.pos
+                            size: self.size
+                            radius: [dp(15)]
+                    
+                    # Tutorial Section (Tidak diubah)
+                    BoxLayout:
+                        orientation: 'vertical'
+                        size_hint_y: None
+                        height: self.minimum_height
+                        spacing: dp(10)
+                        
+                        Label:
+                            text: "How It Works"
+                            font_size: dp(20)
+                            bold: True
+                            color: 0.886, 0.478, 0.415, 1
+                            size_hint_y: None
+                            height: dp(35)
+                        
+                        Label:
+                            text: "1. Take a picture of your tongue"
+                            font_size: dp(14)
+                            color: 0.2, 0.2, 0.2, 1
+                            size_hint_y: None
+                            height: self.texture_size[1] + dp(10) # Sedikit penyesuaian agar tidak terpotong
+                            text_size: self.width - dp(20), None
+                            halign: 'left'
+                            valign: 'top'
+                        Label:
+                            text: "2. Upload the tongue image below"
+                            font_size: dp(14)
+                            color: 0.2, 0.2, 0.2, 1
+                            size_hint_y: None
+                            height: self.texture_size[1] + dp(10) # Sedikit penyesuaian agar tidak terpotong
+                            text_size: self.width - dp(20), None
+                            halign: 'left'
+                            valign: 'top'
+                        Label:
+                            text: "3. Press the 'Detect' button"
+                            font_size: dp(14)
+                            color: 0.2, 0.2, 0.2, 1
+                            size_hint_y: None
+                            height: self.texture_size[1] + dp(10) # Sedikit penyesuaian agar tidak terpotong
+                            text_size: self.width - dp(20), None
+                            halign: 'left'
+                            valign: 'top'
+                        Label:
+                            text: "4. Wait for AI to process"
+                            font_size: dp(14)
+                            color: 0.2, 0.2, 0.2, 1
+                            size_hint_y: None
+                            height: self.texture_size[1] + dp(10) # Sedikit penyesuaian agar tidak terpotong
+                            text_size: self.width - dp(20), None
+                            halign: 'left'
+                            valign: 'top'
+                        Label:
+                            text: "5. The result will appear below"
+                            font_size: dp(14)
+                            color: 0.2, 0.2, 0.2, 1
+                            size_hint_y: None
+                            height: self.texture_size[1] + dp(10) # Sedikit penyesuaian agar tidak terpotong
+                            text_size: self.width - dp(20), None
+                            halign: 'left'
+                            valign: 'top'
+
+                    # Upload Section
+                    BoxLayout:
+                        orientation: 'vertical'
+                        size_hint_y: None
+                        height: self.minimum_height
+                        spacing: dp(15)
+                        
+                        Label:
+                            text: "Detect Your Condition!"
+                            font_size: dp(20)
+                            bold: True
+                            color: 0.886, 0.478, 0.415, 1
+                            size_hint_y: None
+                            height: dp(35)
+                        
+                        Label:
+                            text: "Upload an image of your tongue for AI-powered detection"
+                            font_size: dp(14)
+                            color: 0.33, 0.33, 0.33, 1
+                            size_hint_y: None
+                            height: dp(40)
+                            text_size: self.width - dp(20), None
+                            halign: 'center'
+                        
+                        # Upload Area diubah dari BoxLayout menjadi Button
+                        Button:
+                            on_release: root.select_image() # <-- Fungsi dipindahkan ke sini
+                            background_normal: ''
+                            background_color: 0, 0, 0, 0 # <-- Membuat background tombol transparan
+                            
+                            # Properti dari BoxLayout lama tetap dipertahankan
+                            size_hint_y: None
+                            height: self.width 
+                            padding: dp(15)
+                            
+                            canvas.before:
+                                Color:
+                                    rgba: 1, 1, 1, 1
+                                Line:
+                                    rounded_rectangle: self.x, self.y, self.width, self.height, dp(12)
+                                    width: dp(3)
+                                    dash_offset: 5
+                                    dash_length: 10
+                            
+                            # FloatLayout sekarang menjadi anak dari Button ini
+                            FloatLayout:
+                                size_hint_y: 1
+                                
+                                # Upload Icon
+                                Label:
+                                    text: "[size=60]☁[/size]"
+                                    markup: True
+                                    opacity: 0 if root.preview_image else 1
+                                    pos_hint: {'center_x': 0.5, 'center_y': 0.6}
+                                
+                                Label:
+                                    text: "Tap to select an image"
+                                    font_size: dp(14)
+                                    color: 0.33, 0.33, 0.33, 1
+                                    opacity: 0 if root.preview_image else 1
+                                    pos_hint: {'center_x': 0.5, 'center_y': 0.35}
+                                
+                                Label:
+                                    text: "Supported: JPG, PNG, HEIC"
+                                    font_size: dp(12)
+                                    color: 0.6, 0.6, 0.6, 1
+                                    opacity: 0 if root.preview_image else 1
+                                    pos_hint: {'center_x': 0.5, 'center_y': 0.2}
+                                
+                                # Preview Image
+                                Image:
+                                    id: preview_img
+                                    source: root.preview_image
+                                    opacity: 1 if root.preview_image else 0
+                                    pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+                                    allow_stretch: True
+                                    keep_ratio: True
+
+                        
+                        # Error Message (Tidak diubah)
+                        BoxLayout:
+                            size_hint_y: None
+                            height: dp(60) if root.show_error else 0
+                            opacity: 1 if root.show_error else 0
+                            padding: dp(10)
+                            canvas.before:
+                                Color:
+                                    rgba: 1, 0.92, 0.93, 1
+                                RoundedRectangle:
+                                    pos: self.pos
+                                    size: self.size
+                                    radius: [dp(8)]
+                            
+                            Label:
+                                text: root.error_message
+                                color: 0.78, 0.16, 0.16, 1
+                                font_size: dp(13)
+                                text_size: self.width - dp(10), None
+                                halign: 'center'
+                                valign: 'middle'
+                        
+                        # Detect Button
+                        Button:
+                            text: "Detect" if not root.is_loading else "Processing..."
+                            size_hint_y: None
+                            height: dp(36) # DIUBAH: dari dp(45) menjadi dp(36)
+                            background_normal: ''
+                            background_color: 0.886, 0.478, 0.415, 1
+                            color: 1, 1, 1, 1
+                            font_size: dp(18)
+                            bold: True
+                            disabled: root.is_loading
+                            on_release: root.detect_image()
+                            canvas.before:
+                                Color:
+                                    rgba: self.background_color if not self.disabled else [0.5, 0.5, 0.5, 1]
+                                RoundedRectangle:
+                                    pos: self.pos
+                                    size: self.size
+                                    radius: [dp(18)] # DIUBAH: dari dp(22.5) menjadi dp(18)
+                    
+                    # Results Section
+                    BoxLayout:
+                        id: results_section
+                        orientation: 'vertical'
+                        size_hint_y: None
+                        height: self.minimum_height
+                        spacing: dp(15)
+                        
+                        Label:
+                            text: "Results"
+                            font_size: dp(20)
+                            bold: True
+                            color: 0.886, 0.478, 0.415, 1
+                            size_hint_y: None
+                            height: dp(35)
+                        
+                        # Result Card
+                        BoxLayout:
+                            orientation: 'vertical'
+                            size_hint_y: None
+                            height: dp(220) if root.has_result else dp(100)
+                            padding: dp(15)
+                            spacing: dp(10)
+                            canvas.before:
+                                Color:
+                                    rgba: 1, 1, 1, 1
+                                RoundedRectangle:
+                                    pos: self.pos
+                                    size: self.size
+                                    radius: [dp(12)]
+                            
+                            # Result Header
+                            Label:
+                                text: "Analysis Complete" if root.has_result else ""
+                                font_size: dp(16)
+                                bold: True
+                                color: 0.2, 0.2, 0.2, 1
+                                size_hint_y: None
+                                height: dp(25) if root.has_result else 0
+                                opacity: 1 if root.has_result else 0
+                            
+                            # Prognosis
+                            BoxLayout:
+                                orientation: 'vertical'
+                                size_hint_y: None
+                                height: dp(80) if root.has_result else 0
+                                opacity: 1 if root.has_result else 0
+                                spacing: dp(5)
+                                padding: dp(5)
+                                
+                                Label:
+                                    text: "Prognosis:"
+                                    font_size: dp(14)
+                                    color: 0.2, 0.2, 0.2, 1
+                                    size_hint_y: None
+                                    height: dp(20)
+                                
+                                Label:
+                                    text: root.prediction_text if root.has_result else ""
+                                    font_size: dp(24)
+                                    bold: True
+                                    color: root.prognosis_color
+                                    size_hint_y: None
+                                    height: dp(40)
+                                    canvas.before:
+                                        Color:
+                                            rgba: root.prognosis_bg_color
+                                        RoundedRectangle:
+                                            pos: self.pos
+                                            size: self.size
+                                            radius: [dp(8)]
+                            
+                            # Confidence
+                            BoxLayout:
+                                orientation: 'vertical'
+                                size_hint_y: None
+                                height: dp(60) if root.has_result else 0
+                                opacity: 1 if root.has_result else 0
+                                spacing: dp(5)
+                                
+                                Label:
+                                    text: "Confidence:"
+                                    font_size: dp(14)
+                                    color: 0.2, 0.2, 0.2, 1
+                                    size_hint_y: None
+                                    height: dp(20)
+                                
+                                Label:
+                                    text: root.confidence_text if root.has_result else ""
+                                    font_size: dp(20)
+                                    bold: True
+                                    color: 0.886, 0.478, 0.415, 1
+                                    size_hint_y: None
+                                    height: dp(30)
+                            
+                            # No Results Message
+                            Label:
+                                text: "Upload an image and click 'Detect'\\nto see results here."
+                                font_size: dp(14)
+                                color: 0.47, 0.47, 0.47, 1
+                                opacity: 0 if root.has_result else 1
+                                size_hint_y: 1 if not root.has_result else None
+                                height: 0 if root.has_result else dp(60)
+                                text_size: self.width - dp(20), None
+                                halign: 'center'
+                                valign: 'middle'
+                
+                # Spacer
+                Widget:
+                    size_hint_y: None
+                    height: dp(30)
