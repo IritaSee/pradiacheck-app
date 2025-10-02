@@ -184,14 +184,6 @@ class MainScreen(Screen):
             # [MODIFIKASI: HAPUS GAMBAR SETELAH HASIL MUNCUL]
             self.preview_image = ""
             self.image_path = ""
-            
-            # Coba hapus file gambar yang diupload/dikonversi
-            if os.path.exists(original_image_path):
-                try:
-                    os.remove(original_image_path)
-                    print(f"Removed temporary file: {original_image_path}")
-                except Exception as e:
-                    print(f"Failed to remove file {original_image_path}: {e}")
             # ---------------------------------------------------
 
     def scroll_to_results(self):
@@ -208,5 +200,5 @@ class HelloWorld(App):
         return MainScreen()
 
 if __name__ == '__main__':
-    Window.size = (430, 932)
+    Window.size = (430, 832)
     HelloWorld().run()
